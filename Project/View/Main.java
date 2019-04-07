@@ -19,6 +19,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.*;
+
+import DAO.practice;
+
 import javax.swing.GroupLayout.Alignment;
 
 
@@ -440,7 +443,15 @@ public class Main extends JFrame {
 			francepanel.setVisible(false);
 		
 	}
-
+	 public void start() {
+         Main panel = new Main();
+         JFrame st = new JFrame();
+         
+         st.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         st.add(panel);
+         st.setSize(540,400);
+         st.setVisible(true);
+     }
 	
 
 	private static void addPopup(Component component, final JPopupMenu popup) {
