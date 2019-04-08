@@ -64,7 +64,7 @@ public class london extends JFrame {
 	   EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Main frame = new Main();
+					Pos frame = new Pos();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -132,12 +132,12 @@ public class london extends JFrame {
 		JButton btn_gamja = new JButton("");
 		btn_gamja.setBounds(12, 10, 83, 71);
 		sikbbangpanel.add(btn_gamja);
-		btn_gamja.setIcon(new ImageIcon(Main.class.getResource("/images/gamja.PNG")));
+		btn_gamja.setIcon(new ImageIcon(Pos.class.getResource("/images/gamja.PNG")));
 		
 		JButton btn_gokmul = new JButton("");
 		btn_gokmul.setBounds(109, 13, 77, 71);
 		sikbbangpanel.add(btn_gokmul);
-		btn_gokmul.setIcon(new ImageIcon(Main.class.getResource("/images/\uACE1\uBB3C\uC2DD\uBE75.PNG")));
+		btn_gokmul.setIcon(new ImageIcon(Pos.class.getResource("/images/\uACE1\uBB3C\uC2DD\uBE75.PNG")));
 		
 		JButton btn_danhobak = new JButton("");
 		btn_danhobak.setBounds(229, 8, 83, 76);
@@ -146,22 +146,22 @@ public class london extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btn_danhobak.setIcon(new ImageIcon(Main.class.getResource("/images/\uB2E8\uD638\uBC15\uAC80\uC740\uAE68.PNG")));
+		btn_danhobak.setIcon(new ImageIcon(Pos.class.getResource("/images/\uB2E8\uD638\uBC15\uAC80\uC740\uAE68.PNG")));
 		
 		JButton btn_denish = new JButton("");
 		btn_denish.setBounds(18, 132, 77, 71);
 		sikbbangpanel.add(btn_denish);
-		btn_denish.setIcon(new ImageIcon(Main.class.getResource("/images/\uB370\uB2C8\uC26C\uC2DD\uBE75.PNG")));
+		btn_denish.setIcon(new ImageIcon(Pos.class.getResource("/images/\uB370\uB2C8\uC26C\uC2DD\uBE75.PNG")));
 		
 		JButton btn_morning = new JButton("");
 		btn_morning.setBounds(115, 132, 77, 71);
 		sikbbangpanel.add(btn_morning);
-		btn_morning.setIcon(new ImageIcon(Main.class.getResource("/images/\uBAA8\uB2DD\uD1A0\uC2A4\uD2B8.PNG")));
+		btn_morning.setIcon(new ImageIcon(Pos.class.getResource("/images/\uBAA8\uB2DD\uD1A0\uC2A4\uD2B8.PNG")));
 		
 		JButton btn_bam = new JButton("");
 		btn_bam.setBounds(226, 132, 86, 71);
 		sikbbangpanel.add(btn_bam);
-		btn_bam.setIcon(new ImageIcon(Main.class.getResource("/images/\uBC24\uC2DD\uBE75.PNG")));
+		btn_bam.setIcon(new ImageIcon(Pos.class.getResource("/images/\uBC24\uC2DD\uBE75.PNG")));
 		
 		JLabel label = new JLabel("\uAC10\uC790\uC2DD\uBE75");
 		label.setFont(new Font("¸¼Àº °íµñ", Font.PLAIN, 12));

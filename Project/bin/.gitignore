@@ -1,8 +1,8 @@
 /.classpath
 /.project
 /.settings/
-/Controller/
 /DAO/
+/DB/
 /DTO/
 /Model/
 /RemoteSystemsTempFiles/
