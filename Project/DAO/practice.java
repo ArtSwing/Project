@@ -150,7 +150,7 @@ public class practice extends JFrame {
 					pstmt.setString(2, (String) model2.getValueAt(row, 1).toString());
 					pstmt.setInt(3, Integer.parseInt(model2.getValueAt(row, 2).toString()));
 
-					boolean cnt = pstmt.execute();
+					int cnt = pstmt.executeUpdate();
 					System.out.println(cnt);
 					// pstmt.executeUpdate(); create insert update delete
 					// pstmt.executeQuery(); select
@@ -208,6 +208,7 @@ public class practice extends JFrame {
 				}
 				model2.setRowCount(0); // 전체 테이블 화면을 지워줌
 				select(); // 수정 후다시 전체 값들을 받아옴.
+				
 			}
 		});
 		jBtnEditRow.setBounds(182, 270, 120, 25);
