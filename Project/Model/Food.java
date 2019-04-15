@@ -10,6 +10,14 @@ import java.util.Vector;
 		String name;
 		String imgUrl;
 		int price;
+		int tabid;
+		
+		public int getTabid() {
+			return tabid;
+		}
+		public void setTabid(int tabid) {
+			this.tabid = tabid;
+		}
 		public int getId() {
 			return id;
 		}
@@ -36,8 +44,10 @@ import java.util.Vector;
 		}
 		@Override
 		public String toString() {
-			return "beans [id=" + id + ", name=" + name + ", imgUrl=" + imgUrl + ", price=" + price + "]";
+			return "Food [id=" + id + ", name=" + name + ", imgUrl=" + imgUrl + ", price=" + price + ", tabid=" + tabid
+					+ "]";
 		}
+		
 		
 		
 }

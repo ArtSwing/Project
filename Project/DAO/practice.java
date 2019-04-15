@@ -34,8 +34,12 @@ public class practice extends JFrame {
 	private Connection con = null;
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null; // 리턴받아 사용할 객체 생성 ( select에서 보여줄 때 필요 )
-
+	
+	DAO dao;
+	
 	public practice() {
+		dao = new DAO();
+		
 		getContentPane().setLayout(null); // 레이아웃 배치관리자 삭제
 		table = new JTable(model); // 테이블에 모델객체 삽입
 		table.addMouseListener(new JTableMouseListener()); // 테이블에 마우스리스너 연결
@@ -43,7 +47,7 @@ public class practice extends JFrame {
 		scrollPane.setSize(500, 200);
 		getContentPane().add(scrollPane);
 		initialize();
-		ArrayList<Food> foods = select();
+		ArrayList<Food> foods = dao.Foods_Select();
 		for (Food food : foods) {
 
 			model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice() });
@@ -51,7 +55,7 @@ public class practice extends JFrame {
 
 	}
 
-	private class JTableMouseListener implements MouseListener { // 마우스로 눌려진값확인하기
+	public class JTableMouseListener implements MouseListener { // 마우스로 눌려진값확인하기
 		public void mouseClicked(java.awt.event.MouseEvent e) { // 선택된 위치의 값을 출력
 
 			JTable jtable = (JTable) e.getSource();
@@ -75,44 +79,6 @@ public class practice extends JFrame {
 		}
 	}
 
-	private ArrayList<Food> select() { // 테이블에 보이기 위해 검색
-
-		String query = "select * from Food Order by foodid";
-		try {
-			Class.forName(driver);
-			con = DriverManager.getConnection(url, "london", "london");
-			pstmt = con.prepareStatement(query);
-			rs = pstmt.executeQuery(); // 리턴받아와서 데이터를 사용할 객체생성
-			ArrayList<Food> foods = new ArrayList<Food>();
-
-			while (rs.next()) { // 각각 값을 가져와서 테이블값들을 추가
-				Food food = new Food();
-				food.setId(Integer.parseInt(rs.getString("Foodid")));
-				food.setName(rs.getString("Foodname"));
-				food.setPrice(Integer.parseInt(rs.getString("price")));
-				foods.add(food);
-
-				// model.addRow(new
-				// Object[]{rs.getString("Foodid"),rs.getString("Foodname"),rs.getString("price")});
-			}
-
-			for (Food food : foods) {
-				System.out.println(food.toString());
-			}
-			return foods;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		} finally {
-			try {
-				rs.close();
-				pstmt.close();
-				con.close(); // 객체 생성한 반대 순으로 사용한 객체는 닫아준다.
-			} catch (Exception e2) {
-			}
-		}
-		return null;
-	}
-
 	private void initialize() { // 액션이벤트와 버튼 컴포넌트 설정
 
 		// 테이블 새로 한줄 추가하는 부분
@@ -132,7 +98,7 @@ public class practice extends JFrame {
 		jBtnSaveRow = new JButton();
 		jBtnSaveRow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(e.getActionCommand()); // 선택된 버튼의 텍스트값 출력
+				//System.out.println(e.getActionCommand()); // 선택된 버튼의 텍스트값 출력
 				DefaultTableModel model2 = (DefaultTableModel) table.getModel();
 				int row = table.getSelectedRow();
 				if (row < 0)
@@ -161,10 +127,16 @@ public class practice extends JFrame {
 						pstmt.close();
 						con.close();
 					} catch (Exception e2) {
+						e2.printStackTrace();
 					}
 				}
 				model2.setRowCount(0); // 전체 테이블 화면을 지워줌
-				select(); // 저장 후 다시 전체 값들을 받아옴.
+				//select(); // 저장 후 다시 전체 값들을 받아옴.
+				ArrayList<Food> foods = new DAO().Foods_Select();
+				for (Food food : foods) {
+
+					model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice() });
+				}
 			}
 		});
 		jBtnSaveRow.setBounds(182, 222, 120, 25);
@@ -207,7 +179,7 @@ public class practice extends JFrame {
 					}
 				}
 				model2.setRowCount(0); // 전체 테이블 화면을 지워줌
-				select(); // 수정 후다시 전체 값들을 받아옴.
+				dao.Foods_Select(); // 수정 후다시 전체 값들을 받아옴.
 				
 			}
 		});
