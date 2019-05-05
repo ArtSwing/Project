@@ -1,31 +1,26 @@
 package View;
 
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import DAO.DAO;
 import Model.Employee;
-import Model.Food;
-import jdk.nashorn.internal.runtime.regexp.joni.SearchAlgorithm;
-
-import java.awt.Font;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.JComboBox;
 public class Emp extends JFrame {
 	private JTable table;
-	private JButton btn_search;
-	private JTextField textField;
+	private JTextField txtsearch;
 	private JPanel contentPane;
 	DAO dao;
 	ArrayList<Employee> employees;
@@ -51,25 +46,28 @@ public class Emp extends JFrame {
 		label.setBounds(192, 30, 177, 49);
 		getContentPane().add(label);
 		
-		textField = new JTextField();
-		textField.addKeyListener(new KeyAdapter() {
+		txtsearch = new JTextField();
+		txtsearch.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				 System.out.println(e.getKeyChar()+" keyReleased key");
+				for (int i = 0; i < model.getRowCount();) {
+					model.removeRow(0);
+	            }
+				 String s = txtsearch.getText();
+				 System.out.println(s);
+                 String sql = "select * from employee where empname Like '%"+s+"%'";
+                 ArrayList<Model.Employee> bean = dao.getUserSearch(sql);
+                 for (Model.Employee beans : bean) {
+         			model.addRow(new Object[] { beans.getEmpid(), beans.getEmpname(), beans.getSex(),beans.getRank(),beans.getPhone(),beans.getSalary() });
+         			System.out.println(beans);
+         		}
+                 
 			}
 		});
-		textField.setBounds(192, 132, 116, 21);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		txtsearch.setBounds(177, 106, 141, 48);
+		getContentPane().add(txtsearch);
+		txtsearch.setColumns(10);
 		JTextField jTextField = new JTextField(20);
-		btn_search = new JButton("°Ë»ö");
-		btn_search.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		btn_search.setBounds(334, 131, 97, 23);
-		getContentPane().add(btn_search);
 	
 		
 		
@@ -90,6 +88,11 @@ public class Emp extends JFrame {
 		});
 		btnIntro.setBounds(545, 49, 97, 23);
 		getContentPane().add(btnIntro);
+		
+		JLabel label_1 = new JLabel("<-- \uC774\uB984\uC73C\uB85C \uAC80\uC0C9");
+		label_1.setFont(new Font("±¼¸²", Font.PLAIN, 30));
+		label_1.setBounds(320, 104, 257, 49);
+		getContentPane().add(label_1);
 		
 		
 		dao = new DAO();

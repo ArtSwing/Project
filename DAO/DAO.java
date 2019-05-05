@@ -122,34 +122,46 @@ public class DAO {
      * 검색단어에 해당하는 레코드 검색하기 (like연산자를 사용하여 _, %를 사용할때는 PreparedStatemnet안된다. 반드시
      * Statement객체를 이용함)
      * */
-    public void getUserSearch(DefaultTableModel model, String fieldName,
-            String word) {
-        String query = "SELECT * FROM EMPLOYEE WHERE " + fieldName.trim()
-                + " LIKE '%" + word.trim() + "%'";
+    public ArrayList<Employee> getUserSearch(String sql) {
+        String query = sql;
+    
  
         try {
+        	Class.forName(driver);
+			con = DriverManager.getConnection(url, "london", "london");
         	 st = con.createStatement();
              rs = st.executeQuery(query);
+             ArrayList<Employee> employees = new ArrayList<Employee>();
             // DefaultTableModel에 있는 기존 데이터 지우기
-            for (int i = 0; i < model.getRowCount();) {
-                model.removeRow(0);
-            }
  
             while (rs.next()) {
-                Object data[] = { rs.getString(1), rs.getString(2),
-                        rs.getInt(3), rs.getString(4) };
- 
-                model.addRow(data);
+            	Employee employee = new Employee();
+				employee.setEmpid(Integer.parseInt(rs.getString("empid")));
+				employee.setEmpname(rs.getString("Empname"));
+				employee.setSex(rs.getString("Sex"));
+				employee.setRank(rs.getString("Rank"));
+				employee.setPhone(rs.getString("Phone"));
+				employee.setSalary(Integer.parseInt(rs.getString("salary")));
+				employees.add(employee);
             }
- 
+        	for (Employee employee : employees) {
+				System.out.println(employee.toString());
+			}
+        	System.out.println(employees);
+			return employees;
         } catch (SQLException e) {
-            System.out.println(e + "=> getUserSearch fail");
-        } finally {
+            
+        } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
         	 dbClose();
         }
+		return null;
  
     }
  
+    	
 	}
 
 
