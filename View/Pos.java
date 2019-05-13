@@ -93,21 +93,68 @@ public class Pos extends JFrame {
 	 * Create the frame.
 	 */
 	
-	private class BtnAction implements ActionListener{
-		public void actionPerformed(ActionEvent e) {
-			JButton a = (JButton)e.getSource();
-			int id = Integer.parseInt(a.getName());
-			Food food = null;
-			for (Food temp_food : foods) {
-				if (temp_food.getId() == id) {
-					food = temp_food;
-				}
-			}
-			
-			model.addRow(new Object[] { food.getName(), food.getPrice(),food.getId() });
-			System.out.println(food.toString());
-		}
-	}
+//	private class BtnAction implements ActionListener{
+//		public void actionPerformed(ActionEvent e) {
+//			JButton a = (JButton)e.getSource();
+//			int id = Integer.parseInt(a.getName());
+//			Food food = null;
+//			for (Food temp_food : foods) {
+//				if (temp_food.getId() == id) {
+//					food = temp_food;
+//				}
+//			}
+//			
+//			model.addRow(new Object[] { food.getName(), food.getPrice(),food.getId() });
+//			System.out.println(food.toString());
+//		}
+//	}
+	private int cnt = 0;
+	   private int rowcnt=0;
+	   private class BtnAction implements ActionListener{
+	      public void actionPerformed(ActionEvent e) {
+	         int flag=0;
+	         JButton a = (JButton)e.getSource();
+	         int id =Integer.parseInt(a.getName());
+	         int i;
+	         Food food = null;
+	         for (Food temp_food : foods) {
+	            if (temp_food.getId() == id) {
+	                  food = temp_food;
+	            }
+	         }
+	         table.setModel(model);
+	         DefaultTableModel m=(DefaultTableModel)table.getModel();
+	            int nRow = m.getRowCount(), nCol = m.getColumnCount();
+	            System.out.println("n"+nRow+"n"+nCol);
+	            Object[][] tableData = new Object[nRow][nCol];
+	            int temp,num=0;
+	            String p;
+	            for (i = 0 ; i < nRow ; i++) {
+	                            
+	               
+	                  if(m.getValueAt(i, 2).equals(food.getId())) {
+	                     num = Integer.parseInt((String) m.getValueAt(i, 3));
+	                     System.out.println(num);
+	                     p = Integer.toString(num+1);
+	                     //m.setValueAt(p, i, 3);
+	                     flag=1;
+	                     break;
+	                  }
+	            }
+	                if (flag==0) {
+	                   m.insertRow(0, new Object[]{food.getName(),food.getPrice(),food.getId(),"1"});
+	                   table.updateUI();
+	                }
+	                else {
+	                   //int num = Integer.parseInt((String) m.getValueAt(i, 3));
+	                    System.out.println(num);
+	                    p = Integer.toString(num+1);
+	                    m.setValueAt(p, i, 3);
+	                }
+	                flag=1;    
+	      }
+	   }
+	               
 	
 	public Pos() {
 		
