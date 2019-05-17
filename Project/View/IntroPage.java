@@ -71,7 +71,7 @@ public class IntroPage extends JFrame {
 		btn_Menu.setBounds(401, 31, 189, 123);
 		contentPane.add(btn_Menu);
 		
-		JButton btn_Tong = new JButton("\uB9E4\uC7A5\uD1B5\uACC4");
+		JButton btn_Tong = new JButton("매장통계 (오픈예정) ");
 		btn_Tong.setBounds(401, 219, 189, 123);
 		contentPane.add(btn_Tong);
 		

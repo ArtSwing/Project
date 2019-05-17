@@ -9,6 +9,7 @@ import java.beans.Beans;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.swing.border.TitledBorder;
@@ -34,7 +35,6 @@ public class Pos extends JFrame {
 	private JScrollPane scrollPane; // 테이블 스크롤바 자동으로 생성되게 하기
 	private JTable table;
 	JButton button = new JButton();
-	private JTextField textField;
 	private String[] columnNames= new String[4];
 	private String[][] rowData=new String[4][4] ;
 	ArrayList<Food> foods;
@@ -42,6 +42,9 @@ public class Pos extends JFrame {
 	private String colNames[] = { "메뉴명", "가격", "상품코드","수량" }; // 테이블 컬럼 값들
 	private DefaultTableModel model = new DefaultTableModel(colNames, 0); // 테이블 데이터 모델 객체 생성
 	DAO dao;
+	public NumberFormat nf = NumberFormat.getInstance();
+	public static int sumprice =0;
+	public static JLabel pricelbl; 
 
 	/**
 	 * Launch the application.
@@ -93,21 +96,9 @@ public class Pos extends JFrame {
 	 * Create the frame.
 	 */
 	
-	private class BtnAction implements ActionListener{
-		public void actionPerformed(ActionEvent e) {
-			JButton a = (JButton)e.getSource();
-			int id = Integer.parseInt(a.getName());
-			Food food = null;
-			for (Food temp_food : foods) {
-				if (temp_food.getId() == id) {
-					food = temp_food;
-				}
-			}
-			
-			model.addRow(new Object[] { food.getName(), food.getPrice(),food.getId() });
-			System.out.println(food.toString());
-		}
-	}
+
+
+	               
 	
 	public Pos() {
 		
@@ -118,7 +109,9 @@ public class Pos extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(4, 4, 4, 4));
 		setContentPane(contentPane);
-		
+		pricelbl = new JLabel("0\uC6D0");
+		pricelbl.setBounds(731, 346, 57, 15);
+		contentPane.add(pricelbl);
 		contentPane.setLayout(null);
 		
 		ArrayList<Model.Food> bean = new ArrayList<Model.Food>();
@@ -150,22 +143,37 @@ public class Pos extends JFrame {
 		
 		JButton btn_del = new JButton("\uC804\uCCB4\uCDE8\uC18C");
 		btn_del.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
+				pricelbl.setText("0원");
+				sumprice=0;
+				DefaultTableModel model = (DefaultTableModel)table.getModel();
+				model.setNumRows(0);
 				
 			}
 		});
 		btn_del.setBounds(808, 373, 97, 36);
 		contentPane.add(btn_del);
 		
-		JButton button_1 = new JButton("\uACB0\uC81C\uD558\uAE30");
-		button_1.setBounds(624, 373, 97, 36);
-		contentPane.add(button_1);
-		
-		textField = new JTextField();
-		textField.setText("");
-		textField.setBounds(662, 335, 194, 28);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		JButton btn_gyul = new JButton("\uACB0\uC81C\uD558\uAE30");
+		JPanel p = new JPanel();
+		JTextField tf = new JTextField(10);
+		add(tf);
+		btn_gyul.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int result = JOptionPane.showConfirmDialog(null, 
+						"결제하시겠습니까?", "결제창", 
+						JOptionPane.YES_NO_OPTION);
+		if(result == JOptionPane.CLOSED_OPTION)
+			tf.setText("Just Closed without Selection");
+		else if(result == JOptionPane.YES_OPTION)
+			tf.setText("Yes");
+		else
+			tf.setText("No");
+			}
+		});
+		btn_gyul.setBounds(624, 373, 97, 36);
+		contentPane.add(btn_gyul);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(581, 144, 351, 181);
@@ -207,7 +215,11 @@ public class Pos extends JFrame {
 			JButton btn = new JButton();
 			btn.setName(String.valueOf(food.getId()));
 			btn.addActionListener(new BtnAction());
-			btn.setIcon(new ImageIcon(food.getImgUrl()));
+			
+			ImageIcon img =new ImageIcon(food.getImgUrl());
+			Image i = img.getImage().getScaledInstance(70,70,0);
+			ImageIcon i2 = new ImageIcon(i);
+			btn.setIcon(i2);
 			switch (food.getTabid()) {
 				case 1:
 					sikbbangpanel.add(btn);
@@ -245,13 +257,72 @@ public class Pos extends JFrame {
 			});
 			btnIntro.setBounds(835, 46, 97, 23);
 			contentPane.add(btnIntro);
+			
+			JLabel label = new JLabel("\uCD1D \uACB0\uC81C\uAE08\uC561 : ");
+			label.setToolTipText("");
+			label.setBounds(624, 346, 97, 15);
+			contentPane.add(label);
+			
+			
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	        setSize(969,468);
 
 		
 	}
 	
-
+	
+	private int cnt = 0;
+	   private int rowcnt=0;
+	   private class BtnAction implements ActionListener{
+	      public void actionPerformed(ActionEvent e) {
+	         int flag=0;
+	         
+	         JButton a = (JButton)e.getSource();
+	         int id =Integer.parseInt(a.getName());
+	         int i;
+	         Food food = null;
+	         for (Food temp_food : foods) {
+	            if (temp_food.getId() == id) {
+	                  food = temp_food;
+	                  sumprice += dao.Foods_price(temp_food.getId());
+	     	    	  pricelbl.setText(String.valueOf(nf.format(sumprice))+"원");
+	            }
+	         }
+	         table.setModel(model);
+	         DefaultTableModel m=(DefaultTableModel)table.getModel();
+	            int nRow = m.getRowCount(), nCol = m.getColumnCount();
+	            System.out.println("n"+nRow+"n"+nCol);
+	            Object[][] tableData = new Object[nRow][nCol];
+	            int temp,num=0;
+	            String p;
+	            for (i = 0 ; i < nRow ; i++) {
+	                            
+	               
+	                  if(m.getValueAt(i, 2).equals(food.getId())) {
+	                     num = Integer.parseInt((String) m.getValueAt(i, 3));
+	                     System.out.println(num);
+	                     p = Integer.toString(num+1);
+	                     //m.setValueAt(p, i, 3);
+	                     flag=1;
+	                     break;
+	                  }
+	            }
+	                if (flag==0) {
+	                   m.insertRow(0, new Object[]{food.getName(),nf.format(food.getPrice()),food.getId(),"1"});
+	                   table.updateUI();
+	                }
+	                else {
+	                   //int num = Integer.parseInt((String) m.getValueAt(i, 3));
+	                    System.out.println(num);
+	                    p = Integer.toString(num+1);
+	                    m.setValueAt(p, i, 3);
+	                }
+	                flag=1;    
+	      }
+	   }
+	
+	
+	
 	private class JTableMouseListener implements MouseListener { // 마우스로 눌려진값확인하기
 		@Override
 		public void mouseClicked(java.awt.event.MouseEvent e) { // 선택된 위치의 값을 출력

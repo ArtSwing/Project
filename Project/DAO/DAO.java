@@ -1,19 +1,25 @@
 package DAO;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.swing.table.DefaultTableModel;
 
 import Model.Employee;
 import Model.Food;
+
 
 public class DAO {
 	private static final long serialVersionUID = 1L;
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	private String url = "jdbc:oracle:thin:@localhost:1521:XE"; // @호스트 IP : 포트 : SID
 	private Connection con = null;
+	Statement st;
 	private PreparedStatement pstmt = null;
 	private ResultSet rs = null; // 리턴받아 사용할 객체 생성 ( select에서 보여줄 때 필요 )
 	
@@ -22,6 +28,43 @@ public class DAO {
 		// TODO Auto-generated constructor stub
 	}
 
+	public void dbClose() {
+        try {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+            if (pstmt != null) pstmt.close();
+        } catch (Exception e) {
+            System.out.println(e + "=> dbClose fail");
+        }
+    }
+	
+	public int Foods_price(int foodid) {
+		int contnum = 0;
+		String query = "select price from Food where foodid=?";
+		try {
+			Class.forName(driver);
+			con = DriverManager.getConnection(url, "london", "london");
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, String.valueOf(foodid));
+			rs = pstmt.executeQuery(); // 리턴받아와서 데이터를 사용할 객체생성
+			while (rs.next()) { // 각각 값을 가져와서 테이블값들을 추가
+			String s = rs.getString(1);
+			contnum = Integer.parseInt(s);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				rs.close();
+				pstmt.close();
+				con.close(); // 객체 생성한 반대 순으로 사용한 객체는 닫아준다.
+			} catch (Exception e2) {
+			}
+		}
+		return contnum;
+	}
+		
+	
 	public ArrayList<Food> Foods_Select() { // 테이블에 보이기 위해 검색
 
 		String query = "select * from Food Order by foodid";
@@ -100,9 +143,55 @@ public class DAO {
 		}
 		return null;
 	}
-
-		
+	
+	 /**
+     * 검색단어에 해당하는 레코드 검색하기 (like연산자를 사용하여 _, %를 사용할때는 PreparedStatemnet안된다. 반드시
+     * Statement객체를 이용함)
+     * */
+    public ArrayList<Employee> getUserSearch(String sql) {
+        String query = sql;
+    
+ 
+        try {
+        	Class.forName(driver);
+			con = DriverManager.getConnection(url, "london", "london");
+        	 st = con.createStatement();
+             rs = st.executeQuery(query);
+             ArrayList<Employee> employees = new ArrayList<Employee>();
+            // DefaultTableModel에 있는 기존 데이터 지우기
+ 
+            while (rs.next()) {
+            	Employee employee = new Employee();
+				employee.setEmpid(Integer.parseInt(rs.getString("empid")));
+				employee.setEmpname(rs.getString("Empname"));
+				employee.setSex(rs.getString("Sex"));
+				employee.setRank(rs.getString("Rank"));
+				employee.setPhone(rs.getString("Phone"));
+				employee.setSalary(Integer.parseInt(rs.getString("salary")));
+				employees.add(employee);
+            }
+        	for (Employee employee : employees) {
+				System.out.println(employee.toString());
+			}
+        	System.out.println(employees);
+			return employees;
+        } catch (SQLException e) {
+            
+        } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+        	 dbClose();
+        }
+		return null;
+ 
+    }
+ 
+    	
 	}
+
+
+
 
 
 
