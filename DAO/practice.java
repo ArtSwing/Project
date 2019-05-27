@@ -28,7 +28,7 @@ public class practice extends JFrame {
 
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	private String url = "jdbc:oracle:thin:@localhost:1521:XE"; // @호스트 IP : 포트 : SID
-	private String colNames[] = { "메뉴번호", "메뉴명", "가격","이미지주소","탭번호" }; // 테이블 컬럼 값들
+	private String colNames[] = { "메뉴번호", "메뉴명", "가격" }; // 테이블 컬럼 값들
 	private DefaultTableModel model = new DefaultTableModel(colNames, 0); // 테이블 데이터 모델 객체 생성
 
 	private Connection con = null;
@@ -50,7 +50,7 @@ public class practice extends JFrame {
 		ArrayList<Food> foods = dao.Foods_Select();
 		for (Food food : foods) {
 
-			model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice(),food.getImgUrl(),food.getTabid() });
+			model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice() });
 		}
 
 	}
@@ -87,7 +87,7 @@ public class practice extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println(e.getActionCommand()); // 선택된 버튼의 텍스트값 출력
 				DefaultTableModel model2 = (DefaultTableModel) table.getModel();
-				model2.addRow(new String[] { "", "", "","","" }); // 새테이블의 초기값
+				model2.addRow(new String[] { "", "", "" }); // 새테이블의 초기값
 			}
 		});
 		jBtnAddRow.setBounds(30, 222, 120, 25);
@@ -103,7 +103,7 @@ public class practice extends JFrame {
 				int row = table.getSelectedRow();
 				if (row < 0)
 					return; // 선택이 안된 상태면 -1리턴
-				String query = "insert into Food(Foodid, Foodname,Price,Imgurl,Tabid) VALUES(?,?,?,?,?)";
+				String query = "insert into Food(Foodid, Foodname,Price) VALUES(?,?,?)";
 
 				try {
 
@@ -115,8 +115,6 @@ public class practice extends JFrame {
 					pstmt.setInt(1, Integer.parseInt(model2.getValueAt(row, 0).toString()));
 					pstmt.setString(2, (String) model2.getValueAt(row, 1).toString());
 					pstmt.setInt(3, Integer.parseInt(model2.getValueAt(row, 2).toString()));
-					pstmt.setString(4, (String) model2.getValueAt(row, 3).toString());
-					pstmt.setInt(5, Integer.parseInt(model2.getValueAt(row, 4).toString()));
 
 					int cnt = pstmt.executeUpdate();
 					System.out.println(cnt);
@@ -137,7 +135,7 @@ public class practice extends JFrame {
 				ArrayList<Food> foods = new DAO().Foods_Select();
 				for (Food food : foods) {
 
-					model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice(),food.getImgUrl(),food.getTabid() });
+					model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice() });
 				}
 			}
 		});
@@ -156,19 +154,17 @@ public class practice extends JFrame {
 				if (row < 0)
 					return; // 선택이 안된 상태면 -1리턴
 
-				String query = "UPDATE Food SET Foodid=?, Foodname=?, price=?,Imgurl=?,Tabid=? " + "where id=?";
+				String query = "UPDATE Food SET Foodid=?, Foodname=?, price=? " + "where id=?";
 
 				try {
 					Class.forName(driver); // 드라이버 로딩
 					con = DriverManager.getConnection(url, "london", "london"); // DB 연결
 					pstmt = con.prepareStatement(query);
 
-					// 물음표가 5개 이므로 5개 각각 입력해줘야한다.
+					// 물음표가 3개 이므로 3개 각각 입력해줘야한다.
 					pstmt.setString(1, (String) model2.getValueAt(row, 0));
 					pstmt.setString(2, (String) model2.getValueAt(row, 1));
 					pstmt.setString(3, (String) model2.getValueAt(row, 2));
-					pstmt.setString(4, (String) model2.getValueAt(row, 3));
-					pstmt.setString(5, (String) model2.getValueAt(row, 4));
 
 					int cnt = pstmt.executeUpdate();
 					// pstmt.executeUpdate(); create insert update delete
