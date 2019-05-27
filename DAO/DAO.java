@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Model.Employee;
 import Model.Food;
+import Model.Sale;
 
 
 public class DAO {
@@ -24,8 +25,6 @@ public class DAO {
 	private ResultSet rs = null; // 리턴받아 사용할 객체 생성 ( select에서 보여줄 때 필요 )
 	
 	public DAO() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public void dbClose() {
@@ -38,6 +37,32 @@ public class DAO {
         }
     }
 	
+	public int Foods_price(int foodid) {
+		int contnum = 0;
+		String query = "select price from Food where foodid=?";
+		try {
+			Class.forName(driver);
+			con = DriverManager.getConnection(url, "london", "london");
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, String.valueOf(foodid));
+			rs = pstmt.executeQuery(); // 리턴받아와서 데이터를 사용할 객체생성
+			while (rs.next()) { // 각각 값을 가져와서 테이블값들을 추가
+			String s = rs.getString(1);
+			contnum = Integer.parseInt(s);
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				rs.close();
+				pstmt.close();
+				con.close(); // 객체 생성한 반대 순으로 사용한 객체는 닫아준다.
+			} catch (Exception e2) {
+			}
+		}
+		return contnum;
+	}
+		
 	
 	public ArrayList<Food> Foods_Select() { // 테이블에 보이기 위해 검색
 
@@ -80,14 +105,14 @@ public class DAO {
 	}
 
 	public ArrayList<Employee> EMP_Select() {
-		
+		ArrayList<Employee> employees = null;
 		String query = "select * from EMPLOYEE Order by empid";
 		try {
 			Class.forName(driver);
 			con = DriverManager.getConnection(url, "london", "london");
 			pstmt = con.prepareStatement(query);
 			rs = pstmt.executeQuery(); // 리턴받아와서 데이터를 사용할 객체생성
-			ArrayList<Employee> employees = new ArrayList<Employee>();
+			employees = new ArrayList<Employee>();
 
 			while (rs.next()) { // 각각 값을 가져와서 테이블값들을 추가
 				Employee employee = new Employee();
@@ -96,15 +121,10 @@ public class DAO {
 				employee.setSex(rs.getString("Sex"));
 				employee.setRank(rs.getString("Rank"));
 				employee.setPhone(rs.getString("Phone"));
-				employee.setSalary(Integer.parseInt(rs.getString("salary")));
+				employee.setSalary(rs.getString("salary"));
 				employees.add(employee);
-
 			}
-
-			for (Employee employee : employees) {
-				System.out.println(employee.toString());
-			}
-			return employees;
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		} finally {
@@ -115,9 +135,72 @@ public class DAO {
 			} catch (Exception e2) {
 			}
 		}
-		return null;
+		return employees;
+	}
+	//선택된 행 하나만 가져오기
+	public Employee EMP_SelectOne(int empid) {
+		Employee employee = new Employee();
+		String query = "select * from EMPLOYEE where empid = ?";
+		try {
+			Class.forName(driver);
+			con = DriverManager.getConnection(url, "london", "london");
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, empid);
+			rs = pstmt.executeQuery(); // 리턴받아와서 데이터를 사용할 객체생성			
+
+			while (rs.next()) { // 각각 값을 가져와서 테이블값들을 추가
+				employee.setEmpid(Integer.parseInt(rs.getString("empid")));
+				employee.setEmpname(rs.getString("Empname"));
+				employee.setSex(rs.getString("Sex"));
+				employee.setRank(rs.getString("Rank"));
+				employee.setPhone(rs.getString("Phone"));
+				employee.setSalary(rs.getString("salary"));
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			try {
+				rs.close();
+				pstmt.close();
+				con.close(); // 객체 생성한 반대 순으로 사용한 객체는 닫아준다.
+			} catch (Exception e2) {
+			}
+		}
+		return employee;
 	}
 	
+	
+	public boolean Sale_Insert(ArrayList<Sale> sales) {
+		
+			String query = "insert into Sale(sid, sfoodid, stime, samount) VALUES(SALE_KEY.NEXTVAL,?,TO_CHAR(SYSDATE, 'YYYYMMDD'),?)";		
+			
+			try {
+			Class.forName(driver);
+			con = DriverManager.getConnection(url, "london", "london");
+			pstmt = con.prepareStatement(query);
+			
+			for (Sale sale : sales) {
+				pstmt.setInt(1, sale.getSfoodid());
+				pstmt.setInt(2, sale.getSamount());
+				pstmt.addBatch();
+				pstmt.clearParameters();
+			}
+			int[] result = pstmt.executeBatch();
+			
+			for (int i : result) {
+				if(i == 0) {
+					return false;
+				}
+			}
+			return true;
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			dbClose();
+		}
+		return false;
+	}
 	 /**
      * 검색단어에 해당하는 레코드 검색하기 (like연산자를 사용하여 _, %를 사용할때는 PreparedStatemnet안된다. 반드시
      * Statement객체를 이용함)
@@ -141,7 +224,7 @@ public class DAO {
 				employee.setSex(rs.getString("Sex"));
 				employee.setRank(rs.getString("Rank"));
 				employee.setPhone(rs.getString("Phone"));
-				employee.setSalary(Integer.parseInt(rs.getString("salary")));
+				employee.setSalary(rs.getString("salary"));
 				employees.add(employee);
             }
         	for (Employee employee : employees) {
@@ -158,7 +241,6 @@ public class DAO {
         	 dbClose();
         }
 		return null;
- 
     }
  
     	

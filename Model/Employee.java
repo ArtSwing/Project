@@ -1,9 +1,4 @@
 package Model;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Stack;
-import java.util.Vector;
 
 public class Employee {
 	int empid;
@@ -11,7 +6,7 @@ public class Employee {
 	String sex;
 	String rank;
 	String phone;
-	int salary;
+	String salary;
 	
 	public int getEmpid() {
 		return empid;
@@ -43,10 +38,10 @@ public class Employee {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	public int getSalary() {
+	public String getSalary() {
 		return salary;
 	}
-	public void setSalary(int salary) {
+	public void setSalary(String salary) {
 		this.salary = salary;
 	}
 	@Override
@@ -54,6 +49,20 @@ public class Employee {
 		return "Employee [empid=" + empid + ", empname=" + empname + ", sex=" + sex + ", rank=" + rank + ", phone="
 				+ phone + ", salary=" + salary + "]";
 	}
+	public Employee(int empid, String empname, String sex, String rank, String phone, String salary) {
+		super();
+		this.empid = empid;
+		this.empname = empname;
+		this.sex = sex;
+		this.rank = rank;
+		this.phone = phone;
+		this.salary = salary;
+	}
+	public Employee() {
+		super();
+	}
+	
+	
 	
 
 }
