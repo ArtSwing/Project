@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
+import Model.Employee;
 import Model.Food;
 import View.IntroPage;
 
@@ -117,7 +118,7 @@ public class practice extends JFrame {
 					// 물음표가 3개 이므로 3개 각각 입력해줘야한다.
 					pstmt.setInt(1, Integer.parseInt(model2.getValueAt(row, 0).toString()));
 					pstmt.setString(2, (String) model2.getValueAt(row, 1).toString());
-					pstmt.setInt(3, Integer.parseInt(model2.getValueAt(row, 2).toString()));
+					pstmt.setString(3, (String) model2.getValueAt(row, 2).toString());
 					pstmt.setString(4, (String) model2.getValueAt(row, 3).toString());
 					pstmt.setInt(5, Integer.parseInt(model2.getValueAt(row, 4).toString()));
 
@@ -140,7 +141,7 @@ public class practice extends JFrame {
 				ArrayList<Food> foods = new DAO().Foods_Select();
 				for (Food food : foods) {
 
-					model.addRow(new Object[] { food.getId(), food.getName(), food.getPrice(),food.getImgUrl(),food.getTabid() });
+					model.addRow(new Object[] { food.getId(), food.getName(), nf.format(food.getPrice()),food.getImgUrl(),food.getTabid() });
 				}
 			}
 		});
@@ -158,23 +159,27 @@ public class practice extends JFrame {
 				int row = table.getSelectedRow();
 				if (row < 0)
 					return; // 선택이 안된 상태면 -1리턴
-
-				String query = "UPDATE Food SET Foodid=?, Foodname=?, price=?,Imgurl=?,Tabid=? " + "where foodid=?";
+				System.out.println("선택된 행 : " + row);
+				String query = "UPDATE Food SET Foodname=?, price=?,Imgurl=?,Tabid=? " + "where foodid=?";
 
 				try {
 					Class.forName(driver); // 드라이버 로딩
 					con = DriverManager.getConnection(url, "london", "london"); // DB 연결
 					pstmt = con.prepareStatement(query);
+					Food f1 = dao.Food_SelectOne(Integer.parseInt(model2.getValueAt(row, 0).toString()));
 
 					// 물음표가 5개 이므로 5개 각각 입력해줘야한다.
 //					pstmt.setInt(1, Integer.parseInt(model2.getValueAt(row, 0).toString()));
-					pstmt.setString(1, (String) model2.getValueAt(row, 0));
-					pstmt.setString(2, (String) model2.getValueAt(row, 1));
-					pstmt.setString(3, (String) model2.getValueAt(row, 2));
-					pstmt.setString(4, (String) model2.getValueAt(row, 3));
-					pstmt.setString(5, (String) model2.getValueAt(row, 4));
-					pstmt.setString(6, (String) model2.getValueAt(row, 0));
+					
+					pstmt.setString(1, (String) model2.getValueAt(row, 1));
+					pstmt.setString(2, (String) model2.getValueAt(row, 2));
+					String price = model2.getValueAt(row, 3).toString().replaceAll(",", "");
+					pstmt.setString(3, price);
+//					pstmt.setString(4, (String) model2.getValueAt(row, 3));
+					pstmt.setInt(4, Integer.parseInt(model2.getValueAt(row, 4).toString()));
+					pstmt.setInt(5, Integer.parseInt(model2.getValueAt(row, 0).toString()));
 					int cnt = pstmt.executeUpdate();
+					con.commit();
 					// pstmt.executeUpdate(); create insert update delete
 					// pstmt.executeQuery(); select
 				} catch (Exception eeeee) {
@@ -186,8 +191,15 @@ public class practice extends JFrame {
 					} catch (Exception e2) {
 					}
 				}
-				model2.setRowCount(0); // 전체 테이블 화면을 지워줌
-				dao.Foods_Select(); // 수정 후다시 전체 값들을 받아옴.
+				model.setRowCount(0); // 전체 테이블 화면을 지워줌
+//				dao.Foods_Select(); // 수정 후다시 전체 값들을 받아옴.
+				
+				ArrayList<Food> foods = new DAO().Foods_Select();
+				for (Food food : foods) {
+
+					model.addRow(new Object[] { food.getId(), food.getName(), nf.format(food.getPrice()),food.getImgUrl(),food.getTabid() });
+					System.out.println(foods);
+				}
 				
 			}
 		});

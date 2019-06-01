@@ -183,7 +183,10 @@ public class Pos extends JFrame {
 				    }
 				    boolean d = dao.Sale_Insert(sales);
 				    System.out.println(d);
-				    
+					pricelbl.setText("0¿ø");
+					sumprice = 0;
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					model.setNumRows(0);
 				    
 				    
 				} else {
